@@ -9,6 +9,7 @@ import {catchError, map, of, switchMap} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
 import {CurrentUserInterface} from 'src/app/shared/types/currentUser.interface';
 import {HttpErrorResponse} from '@angular/common/http';
+import {PersistanceService} from 'src/app/shared/services/persistance.service';
 
 @Injectable()
 export class RegisterEffect {
@@ -18,6 +19,8 @@ export class RegisterEffect {
       switchMap(({request}) => {
         return this.authService.register(request).pipe(
           map((currentUser: CurrentUserInterface) => {
+            // window.localStorage.setItem('accessToken', currentUser.token);
+            this.persistanceServive.set('accessToken', currentUser.token);
             return registerSuccessAction({currentUser});
           }),
           catchError((errorResponse: HttpErrorResponse) => {
@@ -29,6 +32,18 @@ export class RegisterEffect {
       })
     )
   );
+  redirectAfterSubmit$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(registerSuccessAction),
+      tap(() => {
+        console.log('success.');
+      })
+    )
+  );
 
-  constructor(private actions$: Actions, private authService: AuthService) {}
+  constructor(
+    private actions$: Actions,
+    private authService: AuthService,
+    private persistanceServive: PersistanceService
+  ) {}
 }
