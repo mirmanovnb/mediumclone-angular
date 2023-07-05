@@ -9,9 +9,12 @@ import {AuthModule} from 'src/app/auth/auth.module';
 import {environment} from 'src/environments/environment';
 import {HttpClientModule} from '@angular/common/http';
 import {EffectsModule} from '@ngrx/effects';
+import {TopBarModule} from './shared/modules/topBar/topBar.module';
 
 @NgModule({
   declarations: [AppComponent],
+  providers: [],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -23,8 +26,7 @@ import {EffectsModule} from '@ngrx/effects';
       maxAge: 25,
       logOnly: environment.production,
     }),
+    TopBarModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}
