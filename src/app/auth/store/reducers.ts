@@ -1,11 +1,22 @@
-import {createReducer, on, Action} from '@ngrx/store'
-
-import {AuthStateInterface} from 'src/app/auth/types/authState.interface'
-import {registerAction} from 'src/app/auth/store/actions'
+import {createReducer, on, Action} from '@ngrx/store';
+import {AuthStateInterface} from 'src/app/auth/types/authState.interface';
+import {
+  registerAction,
+  registerSuccessAction,
+  registerFailureAction,
+} from 'src/app/auth/store/actions/register.action';
+import {
+  loginAction,
+  loginSuccessAction,
+  loginFailureAction,
+} from 'src/app/auth/store/actions/login.action';
 
 const initialState: AuthStateInterface = {
-  isSubmitting: false
-}
+  isSubmitting: false,
+  currentUser: null,
+  validationErrors: null,
+  isLoggedIn: null,
+};
 
 const authReducer = createReducer(
   initialState,
@@ -13,11 +24,54 @@ const authReducer = createReducer(
     registerAction,
     (state): AuthStateInterface => ({
       ...state,
-      isSubmitting: true
+      isSubmitting: true,
+      validationErrors: null,
+    })
+  ),
+  on(
+    registerSuccessAction,
+    (state, action): AuthStateInterface => ({
+      ...state,
+      isSubmitting: false,
+      isLoggedIn: true,
+      currentUser: action.currentUser,
+    })
+  ),
+  on(
+    registerFailureAction,
+    (state, action): AuthStateInterface => ({
+      ...state,
+      isSubmitting: false,
+      validationErrors: action.errors,
+    })
+  ),
+  on(
+    loginAction,
+    (state): AuthStateInterface => ({
+      ...state,
+      isSubmitting: true,
+      validationErrors: null,
+    })
+  ),
+  on(
+    loginSuccessAction,
+    (state, action): AuthStateInterface => ({
+      ...state,
+      isSubmitting: false,
+      isLoggedIn: true,
+      currentUser: action.currentUser,
+    })
+  ),
+  on(
+    loginFailureAction,
+    (state, action): AuthStateInterface => ({
+      ...state,
+      isSubmitting: false,
+      validationErrors: action.errors,
     })
   )
-)
+);
 
 export function reducers(state: AuthStateInterface, action: Action) {
-  return authReducer(state, action)
+  return authReducer(state, action);
 }
